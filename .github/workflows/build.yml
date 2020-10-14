@@ -1,0 +1,39 @@
+name: build
+
+on: 
+  push:
+    branches:
+    - main
+
+jobs:
+  build:
+    runs-on: ubuntu-16.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Unshallow Fetch
+      run: |
+        git fetch --unshallow
+
+    - name: Setup Node
+      uses: actions/setup-node@v2-beta
+      with:
+        node-version: '14'
+
+    - name: Resolve Dependencies
+      run: npm install
+
+    - name: Build
+      run: npm run build
+
+    - name: Configure the CNAME for GitHub Pages
+      run: echo help.photography > build/CNAME
+
+    - name: Deploy GitHub Pages
+      uses: crazy-max/ghaction-github-pages@v1.3.0
+      with:
+        build_dir: build
+      env:
+        GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
